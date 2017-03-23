@@ -10,6 +10,7 @@ from django.contrib.auth.models import User, Group
 from django.views.generic import RedirectView
 from django.core import serializers
 from presnt_api.serializers import UserSerializer
+from presnt_api.models import UserProfile
 
 @api_view(['GET'])
 def get_ocr_view(request):
@@ -47,4 +48,3 @@ class UserViewSet(viewsets.ModelViewSet):
             'token':token.key,
             'user_id': User.objects.get(username=str(user)).pk
             })
-
