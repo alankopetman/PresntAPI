@@ -5,6 +5,8 @@ from rest_auth.registration.serializers import RegisterSerializer
 import ipdb
 import re
 
+from .models import UserProfile
+
 class UserSerializer(UserDetailsSerializer):
     password = serializers.CharField(write_only=True)
     is_professor = serializers.BooleanField(
@@ -77,9 +79,18 @@ class CustomRegistrationSerializer(RegisterSerializer):
     def get_cleaned_data(self):
         cleaned_data = super(CustomRegistrationSerializer, self).get_cleaned_data()
         cleaned_data.update({
-                    ''
+                    'pid': self.data['pid'],
                     'is_professor': self.data['is_professor'],
                     'first_name': self.data['first_name'],
                     'last_name': self.data['last_name'],
-                })
+        })
         return cleaned_data
+
+    def save(self, request):
+        new_user = super(CustomRegistrationSerializer, self).save(request)
+        UserProfile.objects.get_or_create(
+            user=new_user,
+            pid=self.data['pid'],
+            is_professor=self.data['is_professor'],
+        )
+        return new_user
