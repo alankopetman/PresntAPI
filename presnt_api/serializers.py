@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_auth.registration.serializers import RegisterSerializer
+from .models import Course, Section, Attendance
 import ipdb
 import re
 
@@ -74,6 +75,10 @@ class CustomRegistrationSerializer(RegisterSerializer):
             raise serializers.ValidationError(
                 ("PID must be 7 digits")
             )
+        if UserProfile.objects.get(pid=data['pid']):
+            raise serializers.ValidationError(
+                ("There is already a user with this PID.")
+            )
         return data
 
     def get_cleaned_data(self):
@@ -94,3 +99,18 @@ class CustomRegistrationSerializer(RegisterSerializer):
             is_professor=self.data['is_professor'],
         )
         return new_user
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Section
+        fields = '__all__'
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'

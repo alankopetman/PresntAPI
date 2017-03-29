@@ -1,5 +1,5 @@
 # Ignored Files
-
+.penv/
 *.swp
 *.egg-info
 *.pot
