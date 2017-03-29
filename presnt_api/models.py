@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import User
+from datetime import datetime
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -19,21 +20,33 @@ class UserProfile(models.Model):
             return False
 
 class Course(models.Model):
+    professor = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
+    course_name = models.CharField(max_length=32)
     course_id = models.CharField(unique=True, max_length=12)
-    semester = models.CharField()
+    semester = models.CharField(max_length=16)
     year = models.IntegerField()
 
 class Section(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     class_day = models.DateField()
     class_time = models.TimeField()
-    section_number = models.CharField()
     room_size = models.IntegerField()
     room_number = models.IntegerField()
-    router = models.CharField()
+    router = models.CharField(max_length=32)
 
 class Attendance(models.Model):
+    student = models.ForeignKey(
+            User,
+            on_delete=models.CASCADE,
+            related_name='student'
+    )
+    section = models.ForeignKey(
+            Section,
+            on_delete=models.CASCADE,
+            related_name='section'
+    )
     attendance_day = models.DateField()
-    time_in = models.TimeField()
-    attendance_code = models.CharField()
+    time_in = models.TimeField(auto_now_add=True)
+    attendance_code = models.CharField(max_length=12)

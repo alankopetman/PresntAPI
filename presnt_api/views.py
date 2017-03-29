@@ -9,8 +9,18 @@ from rest_framework import mixins
 from django.contrib.auth.models import User, Group
 from django.views.generic import RedirectView
 from django.core import serializers
-from presnt_api.serializers import UserSerializer
-from presnt_api.models import UserProfile
+from presnt_api.serializers import (
+        UserSerializer,
+        CourseSerializer,
+        SectionSerializer,
+        AttendanceSerializer,
+    )
+from presnt_api.models import (
+        UserProfile,
+        Course,
+        Section,
+        Attendance,
+    )
 
 @api_view(['GET'])
 def get_ocr_view(request):
@@ -48,3 +58,23 @@ class UserViewSet(viewsets.ModelViewSet):
             'token':token.key,
             'user_id': User.objects.get(username=str(user)).pk
             })
+
+class CourseViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Course.objects.all().order_by('professor')
+    serializer_class = CourseSerializer
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_fields = ('id', 'course_name', 'year', 'semester')
+
+class SectionViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Section.objects.all().order_by('course')
+    serializer_class = SectionSerializer
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_fields = ('id', 'course')
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Section.objects.all().order_by('section')
+    serializer_class = AttendanceSerializer
+
