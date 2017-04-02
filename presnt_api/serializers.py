@@ -2,8 +2,11 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_auth.registration.serializers import RegisterSerializer
+from .models import Course, Section, Attendance
 import ipdb
 import re
+
+from .models import UserProfile
 
 class UserSerializer(UserDetailsSerializer):
     password = serializers.CharField(write_only=True)
@@ -15,7 +18,10 @@ class UserSerializer(UserDetailsSerializer):
         allow_null=True,
     )
     class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + (
+        li = list(UserDetailsSerializer.Meta.fields)
+        li.remove('username')
+        tu = tuple(li)
+        fields = tu + (
                     'is_professor',
                     'password',
                     'profile_image',)
@@ -72,14 +78,42 @@ class CustomRegistrationSerializer(RegisterSerializer):
             raise serializers.ValidationError(
                 ("PID must be 7 digits")
             )
+        if UserProfile.objects.get(pid=data['pid']):
+            raise serializers.ValidationError(
+                ("There is already a user with this PID.")
+            )
         return data
 
     def get_cleaned_data(self):
         cleaned_data = super(CustomRegistrationSerializer, self).get_cleaned_data()
         cleaned_data.update({
-                    ''
+                    'pid': self.data['pid'],
                     'is_professor': self.data['is_professor'],
                     'first_name': self.data['first_name'],
                     'last_name': self.data['last_name'],
-                })
+        })
         return cleaned_data
+
+    def save(self, request):
+        new_user = super(CustomRegistrationSerializer, self).save(request)
+        UserProfile.objects.get_or_create(
+            user=new_user,
+            pid=self.data['pid'],
+            is_professor=self.data['is_professor'],
+        )
+        return new_user
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Section
+        fields = '__all__'
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'

@@ -179,6 +179,10 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
 
 # Django Cors Headers Settings
 CORS_ORIGIN_ALLOW_ALL = os.environ.get('CORS_ORIGIN_ALLOW_ALL', True)

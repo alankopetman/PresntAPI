@@ -26,6 +26,9 @@ from presnt_api import views
 
 router = HybridRouter()
 router.register(r'users', views.UserViewSet, 'user')
+router.register(r'courses', views.CourseViewSet, 'course')
+router.register(r'sections', views.SectionViewSet, 'section')
+router.register(r'attendances', views.AttendanceViewSet, 'attendance')
 
 urlpatterns = [
     url(r'^api/', include(router.urls)),
