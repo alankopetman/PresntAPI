@@ -18,7 +18,10 @@ class UserSerializer(UserDetailsSerializer):
         allow_null=True,
     )
     class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + (
+        li = list(UserDetailsSerializer.Meta.fields)
+        li.remove('username')
+        tu = tuple(li)
+        fields = tu + (
                     'is_professor',
                     'password',
                     'profile_image',)
