@@ -10,9 +10,13 @@ from .models import UserProfile
 
 class UserSerializer(UserDetailsSerializer):
     password = serializers.CharField(write_only=True)
+    pid = serializers.CharField(
+            source='userprofile.pid',
+    )
     is_professor = serializers.BooleanField(
         source='userprofile.is_professor',
-        default=False,)
+        default=False,
+    )
     profile_image = serializers.ImageField(
         source='userprofile.profile_image',
         allow_null=True,
@@ -22,9 +26,11 @@ class UserSerializer(UserDetailsSerializer):
         li.remove('username')
         tu = tuple(li)
         fields = tu + (
-                    'is_professor',
-                    'password',
-                    'profile_image',)
+            'is_professor',
+            'password',
+            'profile_image',
+            'pid',
+        )
         write_only_fields = ('password',)
 
     def create(self, validated_data):
@@ -78,7 +84,7 @@ class CustomRegistrationSerializer(RegisterSerializer):
             raise serializers.ValidationError(
                 ("PID must be 7 digits")
             )
-        if UserProfile.objects.get(pid=data['pid']):
+        if UserProfile.objects.filter(pid=data['pid']).exists():
             raise serializers.ValidationError(
                 ("There is already a user with this PID.")
             )

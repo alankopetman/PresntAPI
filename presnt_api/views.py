@@ -1,3 +1,4 @@
+import ipdb
 from rest_framework import status, viewsets, filters
 from rest_framework.decorators import api_view, list_route, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,7 @@ from rest_framework import mixins
 from django.contrib.auth.models import User, Group
 from django.views.generic import RedirectView
 from django.core import serializers
+from rest_auth.views import LoginView
 from presnt_api.serializers import (
         UserSerializer,
         CourseSerializer,
@@ -77,4 +79,11 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Section.objects.all().order_by('section')
     serializer_class = AttendanceSerializer
+
+class CustomLoginView(LoginView):
+
+    def get_response(self):
+       response = super(CustomLoginView, self).get_response()
+       response.data.update({'user' : str(self.user.pk)})
+       return response
 

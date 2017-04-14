@@ -18,7 +18,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from rest_framework import routers, serializers, viewsets
-from rest_auth.views import LoginView, LogoutView, UserDetailsView, PasswordResetView
+from rest_auth.views import LogoutView, UserDetailsView, PasswordResetView
+from presnt_api.views import CustomLoginView as LoginView
 
 from presnt_api.router import HybridRouter
 from presnt_api import views
@@ -34,5 +35,6 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^api/auth/', include('rest_auth.urls')),
+    url(r'^api/auth/v2/', LoginView.as_view(), name='login'),
     url(r'^api/auth/registration/', include('rest_auth.registration.urls')),
 ]
