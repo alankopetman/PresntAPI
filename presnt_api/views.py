@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.views.generic import RedirectView
 from django.core import serializers
 from rest_auth.views import LoginView
+from rest_auth.registration.views import RegisterView
 from presnt_api.serializers import (
         UserSerializer,
         CourseSerializer,
@@ -84,6 +85,16 @@ class CustomLoginView(LoginView):
 
     def get_response(self):
        response = super(CustomLoginView, self).get_response()
-       response.data.update({'user' : str(self.user.pk)})
+       user_profile = UserProfile.objects.get(pk=self.user.pk)
+       response.data.update({'user' : str(self.user.pk), 'prof': user_profile.is_professor})
+       return response
+
+class CustomRegistrationView(RegisterView):
+
+    def create(self, request, *args, **kwargs):
+       response = super(CustomRegistrationView, self).create(request)
+       new_user = User.objects.get(username=request.data['username'])
+       new_user_profile = UserProfile.objects.get(user=new_user)
+       response.data.update({'user' : new_user.pk, 'prof': new_user_profile.is_professor })
        return response
 
