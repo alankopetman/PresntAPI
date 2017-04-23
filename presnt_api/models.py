@@ -20,21 +20,38 @@ class UserProfile(models.Model):
             return False
 
 class Course(models.Model):
-    professor = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     course_name = models.CharField(max_length=32)
     course_id = models.CharField(unique=True, max_length=12)
     semester = models.CharField(max_length=16)
-    year = models.IntegerField()
 
 class Section(models.Model):
+    professor = models.ForeignKey(
+            User,
+            on_delete=models.CASCADE,
+            related_name='professor',
+    )
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    class_day = models.DateField()
+    class_day_one = models.CharField(max_length=32)
+    class_day_two = models.CharField(
+            max_length=32,
+            blank=True,
+    )
+    class_day_three = models.CharField(
+            max_length=32,
+            blank=True,
+    )
     class_time = models.TimeField()
     room_size = models.IntegerField()
     room_number = models.IntegerField()
+    roster = models.ManyToManyField(
+            User,
+            related_name='roster',
+            blank=True,
+    )
     router = models.CharField(max_length=32)
+    section_id = models.CharField(max_length=32)
 
 class Attendance(models.Model):
     student = models.ForeignKey(
@@ -49,4 +66,3 @@ class Attendance(models.Model):
     )
     attendance_day = models.DateField()
     time_in = models.TimeField(auto_now_add=True)
-    attendance_code = models.CharField(max_length=12)

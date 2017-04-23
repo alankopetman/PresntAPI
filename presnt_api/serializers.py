@@ -115,6 +115,16 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class SectionSerializer(serializers.ModelSerializer):
+    course_info = serializers.SerializerMethodField()
+
+    def get_course_info(self, section):
+        course_info = {
+                'course_name': section.course.course_name,
+                'course_id': section.course.course_id,
+        }
+        return course_info
+
+
     class Meta:
         model = Section
         fields = '__all__'

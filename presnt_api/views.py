@@ -64,10 +64,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = Course.objects.all().order_by('professor')
+    queryset = Course.objects.all().order_by('course_name')
     serializer_class = CourseSerializer
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
-    filter_fields = ('id', 'course_name', 'year', 'semester')
+    filter_fields = ('id', 'course_name', 'semester')
 
 class SectionViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
