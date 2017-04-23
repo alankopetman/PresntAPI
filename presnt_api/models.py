@@ -43,6 +43,7 @@ class Section(models.Model):
             blank=True,
     )
     class_time = models.TimeField()
+    class_time_end = models.TimeField()
     room_size = models.IntegerField()
     room_number = models.IntegerField()
     roster = models.ManyToManyField(

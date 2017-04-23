@@ -76,6 +76,12 @@ class SectionViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ('id', 'course')
 
+    @list_route()
+    def get_sections(self, request):
+        sections = Section.objects.filter(professor=request.user).order_by('-class_time')
+        serializer = self.get_serializer(sections, many=True)
+        return Response(serializer.data)
+
 class AttendanceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Section.objects.all().order_by('section')
