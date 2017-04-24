@@ -1,7 +1,9 @@
 from django.db import models
+from django.utils.crypto import get_random_string
 from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import User
 from datetime import datetime
+import uuid
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -53,6 +55,12 @@ class Section(models.Model):
     )
     router = models.CharField(max_length=32)
     section_id = models.CharField(max_length=32)
+    access_code = models.CharField(
+            max_length=10,
+            blank=True,
+            unique=True,
+            default=uuid.uuid4,
+    )
 
 class Attendance(models.Model):
     student = models.ForeignKey(

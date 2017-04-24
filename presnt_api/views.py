@@ -82,16 +82,29 @@ class SectionViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(sections, many=True)
         return Response(serializer.data)
 
+    @list_route(methods=['POST'])
+    def register(self, request):
+        section = Section.objects.get(access_code=request.data['access_code'])
+        section.roster.add(request.user.pk)
+        serializer = self.get_serializer(section)
+        return Response(serializer.data)
+
+    @list_route()
+    def get_sections_student(self, request):
+        sections = Section.objects.filter(roster__id__exact=request.user.pk).order_by('-class_time')
+        serializer = self.get_serializer(sections, many=True)
+        return Response(serializer.data)
+
 class AttendanceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = Section.objects.all().order_by('section')
+    queryset = Attendance.objects.all().order_by('section')
     serializer_class = AttendanceSerializer
 
 class CustomLoginView(LoginView):
 
     def get_response(self):
        response = super(CustomLoginView, self).get_response()
-       user_profile = UserProfile.objects.get(pk=self.user.pk)
+       user_profile = UserProfile.objects.get(user__pk=self.user.pk)
        response.data.update({'user' : str(self.user.pk), 'prof': user_profile.is_professor})
        return response
 
